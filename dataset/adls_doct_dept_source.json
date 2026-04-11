@@ -1,0 +1,75 @@
+{
+	"name": "adls_doct_dept_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"folder_n": {
+				"type": "string"
+			},
+			"file_n": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_n",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folder_n",
+					"type": "Expression"
+				},
+				"fileSystem": "health-care-project"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "department_id",
+				"type": "String"
+			},
+			{
+				"name": "department_name",
+				"type": "String"
+			},
+			{
+				"name": "department_head",
+				"type": "String"
+			},
+			{
+				"name": "floor_number",
+				"type": "String"
+			},
+			{
+				"name": "building",
+				"type": "String"
+			},
+			{
+				"name": "contact_number",
+				"type": "String"
+			},
+			{
+				"name": "opening_time",
+				"type": "String"
+			},
+			{
+				"name": "closing_time",
+				"type": "String"
+			},
+			{
+				"name": "active_flag",
+				"type": "String"
+			}
+		]
+	}
+}
