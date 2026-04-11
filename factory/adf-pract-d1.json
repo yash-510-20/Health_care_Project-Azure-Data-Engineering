@@ -1,9 +1,0 @@
-{
-	"name": "adf-pract-d1",
-	"location": "centralindia",
-	"identity": {
-		"type": "SystemAssigned",
-		"principalId": "4c0d1528-2e00-43ec-9c33-895eab18f903",
-		"tenantId": "89e2c9fd-da21-434b-be1b-edfdfad2a5fb"
-	}
-}
