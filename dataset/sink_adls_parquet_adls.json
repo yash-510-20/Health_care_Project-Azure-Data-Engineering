@@ -1,0 +1,29 @@
+{
+	"name": "sink_adls_parquet_adls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"file": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
+				"folderPath": "bronze",
+				"fileSystem": "health-care-project"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
