@@ -18,15 +18,16 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "ee7348fb-e72c-4be3-8f20-181f05b7b19d"
+				"spark.autotune.trackingId": "6b70122d-ab79-4450-bb78-5678cac6f364"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
 			"language_info": {
 				"name": "python"
 			},
@@ -37,14 +38,13 @@
 				"endpoint": "https://synaps-d1.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/spark20",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.5",
 				"nodeCount": 13,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -52,14 +52,21 @@
 			{
 				"cell_type": "code",
 				"source": [
-					"print('hi')"
+					"# abfss://<container>@<storage-account>.dfs.core.windows.net/<folder>/<file>\n",
+					"# https://saashpract.blob.core.windows.net/health-care-project/bronze/Billing.parquet\n",
+					"\n",
+					"df = spark.read.parquet(\"abfss://health-care-project@saashpract.dfs.core.windows.net/bronze/Billing.parquet\")\n",
+					"\n",
+					"df.show(5)\n",
+					"\n",
+					""
 				],
-				"execution_count": 3
+				"execution_count": 6
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"1+3"
+					"5+5"
 				],
 				"execution_count": 4
 			}
