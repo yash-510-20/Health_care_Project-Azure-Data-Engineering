@@ -1,0 +1,69 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "synaps-d1"
+		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
+		"SqlDatabase2_d2_password": {
+			"value": ""
+		},
+		"ls_AzureDataLakeStorage_accountKey": {
+			"value": ""
+		},
+		"ls_database_d2_password": {
+			"value": ""
+		},
+		"ls_ds_d1_database_d1__password": {
+			"value": ""
+		},
+		"synaps-d1-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synaps-d1.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "ds-pract-d2.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "database_pract_s1"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "y_admin"
+		},
+		"SqlDatabase2_d2_properties_typeProperties_server": {
+			"value": "ds-pract-d1.database.windows.net"
+		},
+		"SqlDatabase2_d2_properties_typeProperties_database": {
+			"value": "database-pract-d2"
+		},
+		"SqlDatabase2_d2_properties_typeProperties_userName": {
+			"value": "CloudSA0ff1c828"
+		},
+		"ls_AzureDataLakeStorage_properties_typeProperties_url": {
+			"value": "https://saashpract.dfs.core.windows.net/"
+		},
+		"ls_database_d2_properties_typeProperties_server": {
+			"value": "ds-pract-d1.database.windows.net"
+		},
+		"ls_database_d2_properties_typeProperties_database": {
+			"value": "database-pract-d2"
+		},
+		"ls_database_d2_properties_typeProperties_userName": {
+			"value": "CloudSA0ff1c828"
+		},
+		"ls_ds_d1_database_d1__properties_typeProperties_server": {
+			"value": "ds-pract-d1.database.windows.net"
+		},
+		"ls_ds_d1_database_d1__properties_typeProperties_database": {
+			"value": "database-pract-d1"
+		},
+		"ls_ds_d1_database_d1__properties_typeProperties_userName": {
+			"value": "CloudSA0ff1c828"
+		},
+		"synaps-d1-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://saashpract.dfs.core.windows.net"
+		}
+	}
+}
