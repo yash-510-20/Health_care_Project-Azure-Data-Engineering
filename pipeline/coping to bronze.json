@@ -149,6 +149,10 @@
 										"folder_n": {
 											"value": "@item()",
 											"type": "Expression"
+										},
+										"file_n": {
+											"value": "@concat(item(),'.csv')",
+											"type": "Expression"
 										}
 									}
 								}
