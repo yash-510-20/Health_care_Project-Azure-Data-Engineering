@@ -1,0 +1,153 @@
+{
+	"name": "coping to bronze",
+	"properties": {
+		"activities": [
+			{
+				"name": "coping_raw",
+				"description": "@if(equals(item(),'admissions'),\n    'visit.parquet',\n    if(equals(item(),'patients'),\n        'patient.parquet',\n        concat(item(), '.parquet')\n    )\n)",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('table_name')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "coping_to_raw",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "@concat('SELECT * FROM [dbo].[',item(),']')",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "server_s1_database_d2",
+									"type": "DatasetReference",
+									"parameters": {
+										"table": {
+											"value": "@variables('table_name')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "adls_bronze_Parquet",
+									"type": "DatasetReference",
+									"parameters": {
+										"file_name": {
+											"value": "@if(equals(item(),'admissions'),'visit.parquet',\n      if(equals(item(),'patients'),'patient.parquet',\n           if(equals(item(),'insurance' ),'Billing.parquet',\n               if(equals(item(),'diagnoses_icd'),'diagnosis.parquet',\n               concat(item(),'.parquet') )\n            )    \n        )\n    )",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "coping_raw",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('files')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy_files",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"enableStaging": false
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"table_name": {
+				"type": "Array",
+				"defaultValue": [
+					"admissions",
+					"d_icd_diagnoses",
+					"diagnoses_icd",
+					"insurance",
+					"patients"
+				]
+			},
+			"files": {
+				"type": "Array",
+				"defaultValue": [
+					"Doctors",
+					"Departments"
+				]
+			}
+		},
+		"annotations": []
+	}
+}
