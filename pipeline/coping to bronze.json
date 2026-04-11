@@ -179,7 +179,6 @@
 				"type": "Array",
 				"defaultValue": [
 					"admissions",
-					"d_icd_diagnoses",
 					"diagnoses_icd",
 					"insurance",
 					"patients"
