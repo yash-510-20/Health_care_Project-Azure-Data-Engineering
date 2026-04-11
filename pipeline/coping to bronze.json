@@ -156,7 +156,13 @@
 							"outputs": [
 								{
 									"referenceName": "sink_adls_parquet_adls",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"file": {
+											"value": "@concat(item(),'.parquet')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
