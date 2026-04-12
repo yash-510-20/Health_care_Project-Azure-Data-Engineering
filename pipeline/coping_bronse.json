@@ -261,7 +261,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "@Select * from admissions where admittime > \n    activity('Lookup_last_load').output.firstRow.WatermarkValue\nand admittime <= \n    activity('Lookup_current_load').output.firstRow.NewWaterMark",
+							"value": "@concat(\n'SELECT * FROM admissions WHERE admittime > ''',\nactivity('Lookup_last_load').output.firstRow.WatermarkValue,\n''' AND admittime <= ''',\nactivity('Lookup_current_load').output.firstRow.NewWaterMark,\n''''\n)",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -325,7 +325,7 @@
 					"storedProcedureParameters": {
 						"LastModifiedtime": {
 							"value": {
-								"value": "@activity('Lookup_current_load').output.firstRow.WatermarkValue",
+								"value": "@activity('Lookup_current_load').output.firstRow.NewWaterMark",
 								"type": "Expression"
 							},
 							"type": "DateTime"
