@@ -1,0 +1,88 @@
+{
+	"name": "watermark_lookup_adm_tab",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_database_d2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "subject_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "hadm_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "admittime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "dischtime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "deathtime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "admission_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "admit_provider_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "admission_location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "discharge_location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "insurance",
+				"type": "nvarchar"
+			},
+			{
+				"name": "language",
+				"type": "nvarchar"
+			},
+			{
+				"name": "marital_status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "race",
+				"type": "nvarchar"
+			},
+			{
+				"name": "edregtime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "edouttime",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "hospital_expire_flag",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "watermarktable"
+		}
+	}
+}
