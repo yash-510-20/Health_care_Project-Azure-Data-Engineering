@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": "water.csv",
 				"folderPath": "azure-practice-dir",
 				"fileSystem": "azure-practice-d1"
 			},
