@@ -79,10 +79,6 @@
 				"name": "hospital_expire_flag",
 				"type": "bit"
 			}
-		],
-		"typeProperties": {
-			"schema": "dbo",
-			"table": "watermarktable"
-		}
+		]
 	}
 }
