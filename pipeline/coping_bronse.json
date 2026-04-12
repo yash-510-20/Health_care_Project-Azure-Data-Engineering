@@ -5,8 +5,6 @@
 			{
 				"name": "sql_adls",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
@@ -87,8 +85,6 @@
 			{
 				"name": "adls_to_adls_br",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "sql_adls",
@@ -182,6 +178,8 @@
 			{
 				"name": "Lookup_last_load",
 				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
@@ -210,6 +208,8 @@
 			{
 				"name": "Lookup_current_load",
 				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
@@ -235,6 +235,8 @@
 			{
 				"name": "Copy data admissions",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Lookup_last_load",
@@ -304,6 +306,8 @@
 			{
 				"name": "Stored procedure watermark",
 				"type": "SqlServerStoredProcedure",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copy data admissions",
