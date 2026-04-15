@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "41d61d92-3d01-4062-8624-68076e3a51be"
+				"spark.autotune.trackingId": "77bf18bd-d516-437d-828c-a1e79af40ba0"
 			}
 		},
 		"metadata": {
@@ -58,6 +58,15 @@
 					"# df = spark.read.parquet(\"abfss://health-care-project@saashpract.dfs.core.windows.net/bronze/Billing.parquet\")\n",
 					"\n",
 					"# df.show(5)\n",
+					"\n",
+					"watermark = dbutils.widgets.get(\"watermark_value\")\n",
+					"\n",
+					"from pyspark.sql.functions import col\n",
+					"\n",
+					"df_src = spark.read.format(\"delta\").load(\"<bronze_path>\")\n",
+					"\n",
+					"df_inc = df_src.filter(col(\"updated_date\") > watermark)\n",
+					"\n",
 					"\n",
 					"\n",
 					"Incremental Bronze → Silver (Watermark)\n",

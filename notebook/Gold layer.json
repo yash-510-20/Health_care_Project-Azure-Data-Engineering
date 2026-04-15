@@ -1,0 +1,50 @@
+{
+	"name": "Gold layer",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "e08d6afb-9c8e-4bfa-bac1-dc8392450505"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"loc_silver=\"abfss://health-care-project@saashpract.dfs.core.windows.net/silver/\"\n",
+					"\n",
+					"df_Dep=spark.read.format(\"delta\").load(f\"{loc_silver}silv_departments\")\n",
+					"df_Doc=spark.read.format(\"delta\").load(f\"{loc_silver}silv_doctors\")\n",
+					"df_visit=spark.read.format(\"delta\").load(f\"{loc_silver}silv_visits\")\n",
+					"df_diag=spark.read.format(\"delta\").load(f\"{loc_silver}silv_diagnosis\")\n",
+					"df_bill=spark.read.format(\"delta\").load(f\"{loc_silver}silv_billing\")\n",
+					"df_pat=spark.read.format(\"delta\").load(f\"{loc_silver}silv_patients\")\n",
+					"\n",
+					""
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
