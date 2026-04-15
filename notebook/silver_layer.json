@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "6b70122d-ab79-4450-bb78-5678cac6f364"
+				"spark.autotune.trackingId": "41d61d92-3d01-4062-8624-68076e3a51be"
 			}
 		},
 		"metadata": {
@@ -55,20 +55,161 @@
 					"# abfss://<container>@<storage-account>.dfs.core.windows.net/<folder>/<file>\n",
 					"# https://saashpract.blob.core.windows.net/health-care-project/bronze/Billing.parquet\n",
 					"\n",
-					"df = spark.read.parquet(\"abfss://health-care-project@saashpract.dfs.core.windows.net/bronze/Billing.parquet\")\n",
+					"# df = spark.read.parquet(\"abfss://health-care-project@saashpract.dfs.core.windows.net/bronze/Billing.parquet\")\n",
 					"\n",
-					"df.show(5)\n",
+					"# df.show(5)\n",
+					"\n",
+					"\n",
+					"Incremental Bronze → Silver (Watermark)\n",
+					"last_watermark = spark.sql(\"select max(updated_at) from watermark_table\").collect()[0][0]\n",
+					"\n",
+					"df = spark.read.format(\"delta\").load(\"/mnt/bronze/patient\") \\\n",
+					"    .filter(f\"updated_at > '{last_watermark}'\")\n",
 					"\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 1
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Incremental load\n",
+					"to push data from bronze to silver only todays data \n",
+					""
+				]
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"5+5"
+					"Incremental Bronze → Silver (Watermark)\n",
+					"last_watermark = spark.sql(\"select max(updated_at) from watermark_table\").collect()[0][0]\n",
+					"\n",
+					"df = spark.read.format(\"delta\").load(\"/mnt/bronze/patient\") \\\n",
+					"    .filter(f\"updated_at > '{last_watermark}'\")"
 				],
-				"execution_count": 4
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"#Reading file from bronse and using schema to verify\n",
+					"from pyspark.sql.functions import *\n",
+					"from pyspark.sql.types import *\n",
+					"\n",
+					"loc=\"abfss://health-care-project@saashpract.dfs.core.windows.net/bronze/\"\n",
+					"\n",
+					"df_Dep=spark.read.format(\"parquet\").load(f\"{loc}Departments.parquet\")\n",
+					"df_Doc=spark.read.format(\"parquet\").load(f\"{loc}Doctors.parquet\")\n",
+					"df_visit=spark.read.format(\"parquet\").load(f\"{loc}visit.parquet\")\n",
+					"df_diag=spark.read.format(\"parquet\").load(f\"{loc}diagnosis.parquet\")\n",
+					"df_bill=spark.read.format(\"parquet\").load(f\"{loc}Billing.parquet\")\n",
+					"df_pat=spark.read.format(\"parquet\").load(f\"{loc}patient.parquet\")\n",
+					"\n",
+					"# df_Dep.printSchema()\n",
+					"# df_Doc.printSchema()\n",
+					"# df_visit.printSchema()\n",
+					"# df_diag.printSchema()\n",
+					"# df_bill.printSchema()\n",
+					"# df_pat.printSchema()\n",
+					""
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"df_Dep=df_Dep.withColumn(\"floor_number\",col(\"floor_number\").cast(\"int\"))\\\n",
+					"             .withColumn(\"contact_number\",col(\"contact_number\").cast(\"int\"))\\\n",
+					"             .withColumn(\"opening_time\",to_date(col(\"opening_time\"),\"dd-MM-yyyy\"))\\\n",
+					"             .withColumn(\"closing_time\",to_date(col(\"closing_time\"),\"dd-MM-yyyy\"))\n",
+					"df_Doc=df_Doc.withColumn(\"experience_years\",col(\"experience_years\").cast(\"int\"))\\\n",
+					"             .withColumn(\"joining_date\",to_date(col(\"joining_date\"),\"dd-MM-yyyy\"))\n",
+					"\n",
+					"\n",
+					"# df_Dep.printSchema()\n",
+					"# df_Doc.printSchema()\n",
+					"# df_visit.printSchema()\n",
+					"# df_diag.printSchema()\n",
+					"# df_bill.printSchema()\n",
+					"# df_pat.printSchema()"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"#------------------------------------------------------Removing duplicates & Null------------------------------------\n",
+					"df_cl_dep=df_Dep.dropDuplicates([\"department_id\"]).dropna(subset=[\"department_id\",\"department_name\"])\\\n",
+					"                .withColumn(\"department_name\",trim(col(\"department_name\")))\\\n",
+					"\t\t\t    .withColumn(\"active_flag\",upper(trim(col(\"active_flag\"))))\n",
+					"\n",
+					"df_cl_doc=df_Doc.dropDuplicates(['doctor_id']).dropna(subset=['doctor_id','doctor_name'])\\\n",
+					"                .withColumn(\"doctor_name\",trim(col(\"doctor_name\")))\\\n",
+					"                .withColumn(\"active_flag\",upper(trim(col(\"active_flag\"))))\n",
+					"\n",
+					"df_cl_visit=df_visit.dropDuplicates(['hadm_id']).dropna(subset=['hadm_id','subject_id','admittime']).withColumnRenamed(\"hadm_id\",\"visit_id\")\n",
+					"df_cl_dia=df_diag.dropDuplicates().dropna(subset=[\"hadm_id\",\"icd_code\",])\n",
+					"df_cl_bill=df_bill.select(\"age\",when(col(\"sex\") == \"female\", \"F\").when(col(\"sex\") == \"male\", \"M\").otherwise(\"U\").alias(\"sex\")\n",
+					"                          ,\"bmi\",\"children\",\"smoker\",\"region\",\"charges\",\n",
+					"                         (col(\"charges\") * 0.7).alias(\"insurance_amount\"),\n",
+					"                         (col(\"charges\") * 0.3).alias(\"self_pay_amount\"))\\\n",
+					"        .dropDuplicates().withColumnRenamed(\"charges\",\"total_amount\")\n",
+					"df_cl_pat=df_pat.dropDuplicates().dropna(subset=['subject_id',\"gender\"]).withColumnRenamed(\"subject_id\",\"patient_id\")\\\n",
+					"                .withColumn(\"gender\", upper(trim(col(\"gender\"))))\n",
+					"\n",
+					"\n",
+					"# display(df_cl_pat.limit(2))\n",
+					"# display(df_cl_dep.limit(2))\n",
+					"# display(df_cl_doc.limit(2))\n",
+					"# display(df_cl_visit.limit(2))\n",
+					"# display(df_cl_dia.limit(2))\n",
+					"# display(df_cl_bill.limit(2))"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Join admissions with patients\\n\",\n",
+					"df_visits = df_cl_visit.join(df_cl_pat,df_cl_visit[\"subject_id\"] == df_cl_pat[\"patient_id\"],\"left\")\n",
+					"\n",
+					"#Get primary diagnosis per visit (seq_num = 1 is primary)\",\n",
+					"df_diagnosis = df_cl_dia.filter(col(\"seq_num\") == 1).select(\"hadm_id\",\"icd_code\",\"icd_version\")\\\n",
+					"                         .withColumnRenamed(\"hadm_id\",\"hadm_id_diag\")\\\n",
+					"                         .withColumnRenamed(\"icd_code\",\"primary_icd_code\")\n",
+					"\n",
+					"#Join visits with primary diagnosis\\n\",\n",
+					"df_visits = df_visits.join(df_diagnosis,df_visits[\"visit_id\"] == df_diagnosis[\"hadm_id_diag\"],\"left\")\n",
+					"\n",
+					"\n",
+					"#dim_date\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"loc_silver=\"abfss://health-care-project@saashpract.dfs.core.windows.net/silver/\"\n",
+					"\n",
+					"df_visits.write.format(\"delta\").mode(\"overwrite\").save(f\"{loc_silver}silv_visits\")\n",
+					"df_cl_dep.write.format(\"delta\").mode(\"overwrite\").save(f\"{loc_silver}silv_departments\")\n",
+					"df_cl_doc.write.format(\"delta\").mode(\"overwrite\").save(f\"{loc_silver}silv_doctors\")\n",
+					"df_cl_bill.write.format(\"delta\").mode(\"overwrite\").save(f\"{loc_silver}silv_billing\")\n",
+					"df_cl_pat.write.format(\"delta\").mode(\"overwrite\").save(f\"{loc_silver}silv_patients\")\n",
+					"df_diagnosis.write.format(\"delta\").mode(\"overwrite\").save(f\"{loc_silver}silv_diagnosis\")"
+				],
+				"execution_count": null
 			}
 		]
 	}
